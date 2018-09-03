@@ -1,0 +1,12 @@
+.has-many-items-form label {
+    text-align: left !important;
+}
+
+#unit_html {
+    font-size: 20px;
+    padding-left: 5px;
+}
+
+.has-many-items-form .box-body {
+    padding: 6px
+}
