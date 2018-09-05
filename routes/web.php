@@ -9,13 +9,13 @@
 | routes are loaded by the RouteServiceProvider within a group which
 | contains the "web" middleware group. Now create something great!
 |
-*/
+ */
 use App\User;
 use App\Bazar;
 use App\Entry;
 
 Route::get('/test', function () {
-   
+
     return Entry::getMonthlyExpenseByUser(5);
 
 });
