@@ -24,7 +24,9 @@ class HomeController extends Controller
                 $row->column(4, function (Column $column) {
                     $column->append(Dashboard::entries());
                 });
-
+                $row->column(4, function (Column $column) {
+                    $column->append(Dashboard::barchart(10));
+                });
                 $row->column(4, function (Column $column) {
                     $column->append(Dashboard::environment());
                 });

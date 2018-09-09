@@ -12,11 +12,11 @@
  */
 use App\User;
 use App\Bazar;
-use App\Entry;
+
 
 Route::get('/test', function () {
 
-    return Entry::getMonthlyExpenseByUser(5);
+    return User::getMonthlyExpenseByUser(5);
 
 });
 

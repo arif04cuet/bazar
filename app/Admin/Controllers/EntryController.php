@@ -73,9 +73,9 @@ class EntryController extends Controller
     {
         return Admin::grid(Entry::class, function (Grid $grid) {
 
-            if(!Admin::user()->isAdministrator())
-                $grid->model()->where('user_id',Admin::user()->id);
-            
+            if (!Admin::user()->isAdministrator())
+                $grid->model()->where('user_id', Admin::user()->id);
+
             $grid->model()->orderBy('id', 'desc');
             $grid->id('ID')->sortable();
             $grid->entry_date();
@@ -83,20 +83,20 @@ class EntryController extends Controller
                 $count = count($items);
                 return "<span class='label label-success'>{$count}</span>";
             });
-            $grid->column('total_sum','Total Spent ( TK )')->display(function () {
+            $grid->column('total_sum', 'Total Spent ( TK )')->display(function () {
                 $sum = collect($this->items)->sum('total');
                 return "<span class='label label-success'>{$sum}</span>";
             });
 
-            $grid->filter(function($filter){
+            $grid->filter(function ($filter) {
 
                 $filter->disableIdFilter();
                 $filter->between('entry_date', 'Entry Date Range')->date();
                 //$filter->equal('entry_date','By Month')->month();
-            
+
             });
 
-            
+
         });
     }
 
@@ -108,36 +108,33 @@ class EntryController extends Controller
     protected function form()
     {
         return Admin::form(Entry::class, function (Form $form) {
-           
+
             Admin::css('css/custom.css');
             Admin::js('js/custom.js');
-            
-        
+
+
             $form->date('entry_date')->default(now())->rules('required');
             $form->hidden('user_id')->value(Admin::user()->id);
-            $form->hasmanyinline('items','Add Items', function (Form\NestedForm $form) {
+            $form->hasmanyinline('items', 'Add Items', function (Form\NestedForm $form) {
 
                 // get bazar list
                 $user = Admin::user();
-                $latitude = $user->latitude;
-                $longitude = $user->longitude;
                 $no_bazar = config('app.user_bazar_count');
-                $query = Bazar::distance($latitude, $longitude);
-                $bazars = $query->limit($no_bazar)->orderBy('distance', 'ASC')->get();
+                $bazars = Bazar::closestBazarbyUser($user, $no_bazar);
 
-                $form->select('product_id','Product')->options(Product::all()->pluck('title', 'id'))->rules('required')->setWidth(12,12);
-                $form->number('unit_price')->rules('required')->setWidth(7,7);
-                $form->number('amount')->rules('required')->setWidth(7,7);
-                $form->select('bazar_id','Bazar')->options($bazars->pluck('name', 'id'))->rules('required')->setWidth(12,12);
-                $form->display('total_html','Total')->placeholder(' ')->attribute('readonly','readonly')->setWidth(7,7);
-                $form->hidden('total')->attribute('id','total');
-                
+                $form->select('product_id', 'Product')->options(Product::all()->pluck('title', 'id'))->rules('required')->setWidth(12, 12);
+                $form->number('unit_price')->rules('required')->setWidth(7, 7);
+                $form->number('amount')->rules('required')->setWidth(7, 7);
+                $form->select('bazar_id', 'Bazar')->options($bazars->pluck('name', 'id'))->rules('required')->setWidth(12, 12);
+                $form->display('total_html', 'Total')->placeholder(' ')->attribute('readonly', 'readonly')->setWidth(7, 7);
+                $form->hidden('total')->attribute('id', 'total');
+
             })->rules('required');
 
 
              //before save
-             $form->saving(function(Form $form){
-                
+            $form->saving(function (Form $form) {
+
             });
 
 
